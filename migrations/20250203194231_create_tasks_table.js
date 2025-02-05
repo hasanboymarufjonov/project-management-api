@@ -6,24 +6,27 @@ exports.up = function (knex) {
   return knex.schema.createTable('tasks', function (table) {
     table.increments('id').primary();
     table.string('title').notNullable();
-    table.text('description');
-    table.date('due_date');
     table
       .integer('project_id')
-      .unsigned()
       .references('id')
       .inTable('projects')
       .onDelete('CASCADE');
     table
-      .integer('assigned_to')
+      .integer('worker_user_id')
       .unsigned()
       .references('id')
-      .inTable('users')
+      .inTable('organization_users')
       .onDelete('SET NULL');
     table
       .enum('status', ['CREATED', 'IN_PROCESS', 'DONE'])
       .defaultTo('CREATED');
-    table.timestamp('done_at');
+    table.timestamp('due_date').nullable();
+    table.timestamp('done_at').nullable();
+    table
+      .integer('created_by')
+      .references('id')
+      .inTable('users')
+      .onDelete('SET NULL');
     table.timestamps(true, true);
   });
 };

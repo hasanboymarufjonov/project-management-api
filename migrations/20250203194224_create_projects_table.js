@@ -8,11 +8,13 @@ exports.up = function (knex) {
     table.string('name').notNullable();
     table.text('description');
     table
-      .integer('organization_id')
+      .integer('org_id')
       .unsigned()
       .references('id')
       .inTable('organizations')
-      .onDelete('CASCADE');
+      .onDelete('CASCADE')
+      .notNullable();
+
     table
       .integer('created_by')
       .unsigned()

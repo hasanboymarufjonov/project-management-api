@@ -79,4 +79,28 @@ export class UsersService {
     await this.knexService.getKnex().table('users').where({ id }).del();
     return { message: 'User deleted successfully' };
   }
+
+  async assignUserToOrganization(org_id: number, user_id: number) {
+    await this.knexService
+      .getKnex()
+      .insert({
+        org_id,
+        user_id,
+      })
+      .into('organization_users');
+    return { message: 'User successfully added to organization' };
+  }
+
+  async getUsersByOrganization(org_id: number) {
+    if (!org_id) {
+      throw new Error('Organization ID is required');
+    }
+
+    return this.knexService
+      .getKnex()
+      .select('u.*')
+      .from('users as u')
+      .innerJoin('organization_users as ou', 'u.id', 'ou.user_id')
+      .where('ou.org_id', org_id);
+  }
 }

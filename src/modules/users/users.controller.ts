@@ -37,4 +37,17 @@ export class UsersController {
   async deleteUser(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
+
+  @Post('assign')
+  async assignUserToOrganization(
+    @Body('org_id') org_id: number,
+    @Body('user_id') user_id: number,
+  ) {
+    return this.usersService.assignUserToOrganization(org_id, user_id);
+  }
+
+  @Get('organization/:org_id')
+  async getUsersByOrganization(@Param('org_id') org_id: number) {
+    return this.usersService.getUsersByOrganization(org_id);
+  }
 }
