@@ -6,7 +6,7 @@ exports.up = function (knex) {
   return knex.schema.createTable('users', function (table) {
     table.increments('id').primary();
     table.string('name').notNullable();
-    table.string('role').notNullable();
+    table.enum('role', ['admin', 'head', 'employee']).notNullable();
     table
       .integer('created_by')
       .references('id')
