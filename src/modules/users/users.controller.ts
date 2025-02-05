@@ -38,7 +38,6 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(AdminGuard)
   async deleteUser(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }

@@ -13,11 +13,7 @@ export class OrganizationsService {
     return this.knexService.getKnex().select('*').from('organizations');
   }
 
-  async createOrganization(data: {
-    name: string;
-    created_by?: number;
-    address: string;
-  }) {
+  async createOrganization(data: { name: string; created_by?: number }) {
     const userExists = await this.knexService
       .getKnex()
       .select('id')
@@ -26,9 +22,7 @@ export class OrganizationsService {
       .first();
 
     if (!userExists) {
-      throw new BadRequestException(
-        'The provided created_by user does not exist',
-      );
+      throw new BadRequestException('The provided user does not exist');
     }
 
     const [newOrganization] = await this.knexService
@@ -52,7 +46,7 @@ export class OrganizationsService {
       .first();
 
     if (!organization) {
-      throw new NotFoundException(`Organization with ID ${id} not found`);
+      throw new NotFoundException(`Organization not found`);
     }
 
     await this.knexService
@@ -73,7 +67,7 @@ export class OrganizationsService {
       .first();
 
     if (!organization) {
-      throw new NotFoundException(`Organization with ID ${id} not found`);
+      throw new NotFoundException(`Organization not found`);
     }
 
     await this.knexService.getKnex().table('organizations').where({ id }).del();

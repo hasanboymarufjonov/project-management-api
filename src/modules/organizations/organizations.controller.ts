@@ -6,8 +6,10 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { OrganizationsService } from './organizations.service';
+import { AdminGuard } from '../../guards/admin.guards';
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -19,13 +21,15 @@ export class OrganizationsController {
   }
 
   @Post()
+  @UseGuards(AdminGuard)
   async createOrganization(
-    @Body() body: { name: string; created_by?: number; address: string },
+    @Body() body: { name: string; created_by?: number },
   ) {
     return this.organizationsService.createOrganization(body);
   }
 
   @Put(':id')
+  @UseGuards(AdminGuard)
   async updateOrganization(
     @Param('id') id: number,
     @Body() body: { name: string; created_by?: number },
