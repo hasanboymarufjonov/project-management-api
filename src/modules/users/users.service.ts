@@ -47,7 +47,7 @@ export class UsersService {
 
   async updateUser(
     id: number,
-    data: { name: string; role: string; created_by?: number },
+    data: { name?: string; role?: string; created_by?: number },
   ) {
     const userExists = await this.knexService
       .getKnex()
@@ -58,6 +58,23 @@ export class UsersService {
 
     if (!userExists) {
       throw new NotFoundException('User not found.');
+    }
+
+    if (data.role && !Object.values(UserRole).includes(data.role as UserRole)) {
+      throw new BadRequestException('Invalid role');
+    }
+
+    if (data.created_by) {
+      const createdByUser = await this.knexService
+        .getKnex()
+        .select('id')
+        .from('users')
+        .where({ id: data.created_by })
+        .first();
+
+      if (!createdByUser) {
+        throw new NotFoundException('Creator user not found.');
+      }
     }
 
     await this.knexService.getKnex().table('users').where({ id }).update(data);

@@ -6,8 +6,10 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { AdminGuard } from '../../guards/admin.guards';
 
 @Controller('users')
 export class UsersController {
@@ -19,6 +21,7 @@ export class UsersController {
   }
 
   @Post()
+  @UseGuards(AdminGuard)
   async createUser(
     @Body() body: { name: string; role: string; created_by?: number },
   ) {
@@ -26,6 +29,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseGuards(AdminGuard)
   async updateUser(
     @Param('id') id: number,
     @Body() body: { name: string; role: string; created_by?: number },
@@ -34,6 +38,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminGuard)
   async deleteUser(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
