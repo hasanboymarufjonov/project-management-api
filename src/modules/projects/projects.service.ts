@@ -26,9 +26,7 @@ export class ProjectsService {
       .first();
 
     if (!orgExists) {
-      throw new BadRequestException(
-        `Organization with ID ${data.org_id} does not exist`,
-      );
+      throw new BadRequestException(`Organization does not exist`);
     }
 
     const [newProject] = await this.knexService
@@ -52,7 +50,7 @@ export class ProjectsService {
       .first();
 
     if (!projectExists) {
-      throw new NotFoundException(`Project with ID ${id} not found`);
+      throw new NotFoundException(`Project not found`);
     }
 
     if (data.org_id) {
@@ -64,9 +62,7 @@ export class ProjectsService {
         .first();
 
       if (!orgExists) {
-        throw new BadRequestException(
-          `Organization with ID ${data.org_id} does not exist`,
-        );
+        throw new BadRequestException(`Organization does not exist`);
       }
     }
 
@@ -87,7 +83,7 @@ export class ProjectsService {
       .del();
 
     if (!result) {
-      throw new NotFoundException(`Project with ID ${id} not found`);
+      throw new NotFoundException(`Project not found`);
     }
 
     return { message: 'Project deleted successfully' };
