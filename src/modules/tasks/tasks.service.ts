@@ -96,29 +96,73 @@ export class TasksService {
   }
 
   async getTasksByUserInProject(user_id: number, project_id: number) {
-    return this.knexService
-      .getKnex()
-      .select('*')
-      .from('tasks')
-      .where('worker_user_id', user_id)
-      .andWhere('project_id', project_id);
+    try {
+      const tasks = await this.knexService
+        .getKnex()
+        .select('*')
+        .from('tasks')
+        .where('worker_user_id', user_id)
+        .andWhere('project_id', project_id);
+
+      return tasks;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to fetch tasks for user ${user_id} in project ${project_id}`,
+      );
+    }
   }
 
   async getTasksByUserAndStatus(user_id: number, status: string) {
-    return this.knexService
-      .getKnex()
-      .select('*')
-      .from('tasks')
-      .where('worker_user_id', user_id)
-      .andWhere('status', status);
+    try {
+      const tasks = await this.knexService
+        .getKnex()
+        .select('*')
+        .from('tasks')
+        .where('worker_user_id', user_id)
+        .andWhere('status', status);
+
+      return tasks;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to fetch tasks for user ${user_id} with status "${status}"`,
+      );
+    }
   }
 
   async completeTask(id: number) {
-    const now = new Date().toISOString();
-    await this.knexService.getKnex().table('tasks').where({ id }).update({
-      status: 'DONE',
-      done_at: now,
-    });
-    return { message: 'Task marked as completed', done_at: now };
+    try {
+      const task = await this.knexService
+        .getKnex()
+        .table('tasks')
+        .select('status', 'done_at')
+        .where({ id })
+        .first();
+
+      if (!task) {
+        throw new NotFoundException(`Task with ID ${id} not found`);
+      }
+
+      if (task.status === 'DONE') {
+        return {
+          message: 'Task is already completed',
+          done_at: task.done_at,
+        };
+      }
+
+      const now = new Date().toISOString();
+      await this.knexService.getKnex().table('tasks').where({ id }).update({
+        status: 'DONE',
+        done_at: now,
+      });
+
+      return { message: 'Task marked as completed', done_at: now };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to complete task with ID ${id}`,
+      );
+    }
   }
 }
