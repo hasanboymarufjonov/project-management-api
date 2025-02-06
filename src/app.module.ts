@@ -4,6 +4,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { OrganizationUsersModule } from './modules/organization-users/organization-users.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
 import { KnexService } from './database/knex.service';
 
 @Module({
@@ -13,6 +14,7 @@ import { KnexService } from './database/knex.service';
     ProjectsModule,
     TasksModule,
     OrganizationUsersModule,
+    StatisticsModule,
   ],
   providers: [KnexService],
 })
