@@ -6,7 +6,7 @@ import {
 import { KnexService } from 'src/database/knex.service';
 
 interface TaskData {
-  title: string;
+  name: string;
   project_id: number;
   worker_user_id?: number;
   status: string;
@@ -18,9 +18,17 @@ interface TaskData {
 export class TasksService {
   constructor(private readonly knexService: KnexService) {}
 
-  async getAllTasks() {
+  async getAllTasks(projectId?: number) {
     try {
-      const tasks = await this.knexService.getKnex().select('*').from('tasks');
+      const knex = this.knexService.getKnex();
+
+      let query = knex('tasks').select('*');
+
+      if (projectId) {
+        query = query.where('project_id', projectId);
+      }
+
+      const tasks = await query;
       return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch tasks');
@@ -29,12 +37,19 @@ export class TasksService {
 
   async createTask(data: TaskData) {
     try {
-      const [id] = await this.knexService
+      const [newTask] = await this.knexService
         .getKnex()
         .insert(data)
         .into('tasks')
-        .returning('id');
-      return { id };
+        .returning([
+          'name',
+          'project_id',
+          'worker_user_id',
+          'status',
+          'created_by',
+          'due_date',
+        ]);
+      return newTask;
     } catch (error) {
       throw new InternalServerErrorException('Failed to create task' + error);
     }

@@ -1,28 +1,32 @@
 import {
   Controller,
   Get,
+  Query,
   Post,
   Body,
   Put,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { HeadGuard } from '../../guards/head.guards';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
-  async getAllTasks() {
-    return this.tasksService.getAllTasks();
+  async getAllTasks(@Query('project_id') projectId?: number) {
+    return this.tasksService.getAllTasks(projectId);
   }
 
   @Post()
+  @UseGuards(HeadGuard)
   async createTask(
     @Body()
     body: {
-      title: string;
+      name: string;
       project_id: number;
       worker_user_id?: number;
       status: string;
@@ -34,11 +38,12 @@ export class TasksController {
   }
 
   @Put(':id')
+  @UseGuards(HeadGuard)
   async updateTask(
     @Param('id') id: number,
     @Body()
     body: {
-      title: string;
+      name: string;
       project_id: number;
       worker_user_id?: number;
       status: string;
